@@ -1,5 +1,5 @@
 # EoR_sky_sim
-Full-sky simulation of the 21cm EoR signal
+Full-sky simulations of the 21cm EoR signal
 CRC-UWC September 2018
 
 Read the pdf for more details.
