@@ -62,7 +62,10 @@ def Pk2Cl_trapz_r(l,z1,z2,k_in,pk_in,Dnu,bres,kres):
     k=np.linspace(k_in[0],k_in[-1],kres)
     pk=pk_interp(k)
     integrand=pk*k**2*2/np.pi
-    cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)*I_bes_r(l,cosmo.z2fq(z2),k,Dnu,bres),k) 
+    if (z1==z2):
+        cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)**2,k) 
+    else: 
+        cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)*I_bes_r(l,cosmo.z2fq(z2),k,Dnu,bres),k) 
     return cl   
 
 def Pk2Cl_trapz_r_log(l,z1,z2,k_in,pk_in,Dnu,bres,kres):
@@ -72,7 +75,10 @@ def Pk2Cl_trapz_r_log(l,z1,z2,k_in,pk_in,Dnu,bres,kres):
     k=np.logspace(np.log10(k_in[0]+1e-5),np.log10(k_in[-1]),kres)
     pk=pk_interp(k)
     integrand=pk*k**2*2/np.pi
-    cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)*I_bes_r(l,cosmo.z2fq(z2),k,Dnu,bres),k) 
+    if (z1==z2):
+        cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)**2,k,Dnu,bres),k) 
+    else:
+        cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)*I_bes_r(l,cosmo.z2fq(z2),k,Dnu,bres),k) 
     return cl   
 
 #######
