@@ -76,7 +76,7 @@ def Pk2Cl_trapz_r_log(l,z1,z2,k_in,pk_in,Dnu,bres,kres):
     pk=pk_interp(k)
     integrand=pk*k**2*2/np.pi
     if (z1==z2):
-        cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)**2,k,Dnu,bres),k) 
+        cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)**2,k) 
     else:
         cl=trapz(integrand*I_bes_r(l,cosmo.z2fq(z1),k,Dnu,bres)*I_bes_r(l,cosmo.z2fq(z2),k,Dnu,bres),k) 
     return cl   
