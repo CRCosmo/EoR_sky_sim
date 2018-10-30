@@ -82,9 +82,8 @@ if __name__ == '__main__':
         pk_in=pk_vec[ipk,:,1]
         C_l=np.zeros((len(ell),2),dtype='float')
         C_l[:,0]=ell
-        if (z_list[ipk][1]-z_list[ipk][0])>Dz: 
-            continue
-        else:
+        if (z_list[ipk][1]-z_list[ipk][0])<=Dz: 
+  
             for l in range(lmin,len(ell)):
                 if verbose==True: print('ell= ',l)
                 if log_flag==True: 
