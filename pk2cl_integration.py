@@ -13,7 +13,7 @@ import scipy.optimize
 from scipy import stats
 import cosmo_func as cosmo
 import EoR_func as Ef
-
+from scipy.interpolate import splrep, splev
 
 
   
