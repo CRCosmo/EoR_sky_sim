@@ -35,13 +35,13 @@ def z2fq(z):
 def transverse_comoving_distance(z):
    '''
    ****************************************************************************************************** 
-   Transverse comoving distance at redshift z corresponding to an angular separation of 1 radian in Mpc/h 
+   Transverse comoving distance at redshift z in Mpc
 
    Input(s)
       z :  [scalar] redshift
    ******************************************************************************************************
    '''
-   Dz =  COSMO.comoving_distance(z).value # Mpc/h 
+   Dz =  COSMO.comoving_distance(z).value # Mpc
    return Dz
 
 
