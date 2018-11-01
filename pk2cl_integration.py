@@ -35,7 +35,7 @@ if __name__ == '__main__':
     o.add_option('--log_flag',action='store_true',dest='log_flag',default=False,help='If True the integration is in log')
     o.add_option('--single_cl',action='store_true',dest='single_cl',default=False,help='If True only Cl is computed: the one specified by zmin and zmax')
     o.add_option('--verbose',action='store_true',dest='verbose',default=False)
-    
+    o.add_option('--fNell',dest='fNell',default=1,help='Fractional number of ells for which C_l will be calculated. Logspacing. Intermediate ells will be interpolated')
 
     opts, args = o.parse_args(sys.argv[1:]) 
 
@@ -50,7 +50,11 @@ if __name__ == '__main__':
     os.mkdir(outdir) #create out directory and check if exits #comment this line if you want to write on the same folder
     single_cl=bool(opts.single_cl)
     zmin,zmax,Dz = np.float(opts.zmin),np.float(opts.zmax),np.float(opts.Dz)
-
+    fNell=float(opts.fNell)
+    if (fNell>1.): 
+        print "N>3nside!"
+        sys.exit() 
+    
     if (single_cl==False): 
         print "generation z list"
         z_vec=np.arange(zmin,zmax+Dz,Dz)
@@ -82,14 +86,27 @@ if __name__ == '__main__':
         pk_in=pk_vec[ipk,:,1]
         C_l=np.zeros((len(ell),2),dtype='float')
         C_l[:,0]=ell
-        if (z_list[ipk][1]-z_list[ipk][0])<=Dz: 
-  
-            for l in range(lmin,len(ell)):
-                if verbose==True: print('ell= ',l)
+        if (z_list[ipk][1]-z_list[ipk][0])<=Dz:          
+            
+            Nell=(lmax-lmin)*fNell
+            print 'computing ', int(Nell),' ells of ',lmax-lmin
+            l_vals=np.unique(np.logspace(np.log10(lmin),np.log10(lmax),int(Nell)).astype(int)) #logspacing
+            #l_vals=np.unique(np.linspace(lmin,lmax,int(Nell)).astype(int)) #linspacing
+            C_l_int=np.zeros(len(l_vals),dtype=float)
+            for il in range(len(l_vals)):
+                if verbose==True: print('ell= ',l_vals[il])
                 if log_flag==True: 
-                    C_l[l,1]=Ef.Pk2Cl_trapz_r_log(l,z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+                    C_l_int[il]=Ef.Pk2Cl_trapz_r_log(l_vals[il],z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
                 else: 
-                    C_l[l,1]=Ef.Pk2Cl_trapz_r(l,z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+                    C_l_int[il]=Ef.Pk2Cl_trapz_r(l_vals[il],z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+            if fNell==1:  
+                print "no need to interpolate"
+                C_l[lmin:,1]=C_l_int[:]
+                
+            else: 
+                print "interpolating the Cl"
+                spl_approx=splrep(l_vals,C_l_int) #creates the B-spline
+                C_l[lmin:,1]=splev(ell[lmin:],spl_approx) #evaluates the B-spline
     
             print "extrapolating Cl to low l"
             mCl=np.loadtxt(opts.mCl_file) #shape is (3,lmax) 0: ell 1: auto 2:cross
