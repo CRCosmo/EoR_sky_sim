@@ -88,25 +88,32 @@ if __name__ == '__main__':
         C_l[:,0]=ell
         if (z_list[ipk][1]-z_list[ipk][0])<=Dz:          
             
-            Nell=(lmax-lmin)*fNell
-            print 'computing ', int(Nell),' ells of ',lmax-lmin
-            l_vals=np.unique(np.logspace(np.log10(lmin),np.log10(lmax),int(Nell)).astype(int)) #logspacing
-            #l_vals=np.unique(np.linspace(lmin,lmax,int(Nell)).astype(int)) #linspacing
-            C_l_int=np.zeros(len(l_vals),dtype=float)
-            for il in range(len(l_vals)):
-                if verbose==True: print('ell= ',l_vals[il])
-                if log_flag==True: 
-                    C_l_int[il]=Ef.Pk2Cl_trapz_r_log(l_vals[il],z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
-                else: 
-                    C_l_int[il]=Ef.Pk2Cl_trapz_r(l_vals[il],z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
-            if fNell==1:  
-                print "no need to interpolate"
-                C_l[lmin:,1]=C_l_int[:]
-                
-            else: 
+            if fNell==1: 
+                print "computing all ells, no need to interpolate"
+                for l in range(lmin,lmax):
+                    if verbose==True: print('ell= ',l)
+                    if log_flag==True: 
+                        C_l[l,1]=Ef.Pk2Cl_trapz_r_log(l,z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+                    else: 
+                        C_l[l,1]=Ef.Pk2Cl_trapz_r(l,z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+            else:
+            
+                Nell=(lmax-lmin)*fNell
+                print 'computing ', int(Nell),' ells of ',lmax-lmin
+                l_vals=np.unique(np.logspace(np.log10(lmin),np.log10(lmax),int(Nell)).astype(int)) #logspacing
+                #l_vals=np.unique(np.linspace(lmin,lmax,int(Nell)).astype(int)) #linspacing
+                C_l_int=np.zeros(len(l_vals),dtype=float)
+                for il in range(len(l_vals)):
+                    if verbose==True: print('ell= ',l_vals[il])
+                    if log_flag==True: 
+                        C_l_int[il]=Ef.Pk2Cl_trapz_r_log(l_vals[il],z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+                    else: 
+                        C_l_int[il]=Ef.Pk2Cl_trapz_r(l_vals[il],z_list[ipk][0],z_list[ipk][1],k_in,pk_in,Dnu,bres,kres)
+
                 print "interpolating the Cl"
                 spl_approx=splrep(l_vals,C_l_int) #creates the B-spline
                 C_l[lmin:,1]=splev(ell[lmin:],spl_approx) #evaluates the B-spline
+ 
     
             print "extrapolating Cl to low l"
             mCl=np.loadtxt(opts.mCl_file) #shape is (3,lmax) 0: ell 1: auto 2:cross
